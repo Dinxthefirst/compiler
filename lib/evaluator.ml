@@ -10,6 +10,10 @@ let rec evaluate_expr = function
      | Sub -> v1 - v2
      | Mul -> v1 * v2
      | Div -> v1 / v2)
+  | UnOp (op, e) ->
+    let v = evaluate_expr e in
+    (match op with
+     | Neg -> -v)
 ;;
 
 let evaluate expr = evaluate_expr expr |> string_of_int

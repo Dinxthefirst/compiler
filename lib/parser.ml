@@ -34,6 +34,9 @@ and parse_high_precedence' left tokens =
 and parse_atom tokens =
   match tokens with
   | INT i :: tokens' -> Int i, tokens'
+  | MINUS :: tokens' ->
+    let right, tokens'' = parse_atom tokens' in
+    UnOp (Neg, right), tokens''
   | LPAREN :: tokens' ->
     let expr, tokens'' = parse_expr tokens' in
     (match tokens'' with
@@ -44,10 +47,10 @@ and parse_atom tokens =
 ;;
 
 let parse tokens =
-  let expr, tokens' = parse_expr tokens in
+  let ast, tokens' = parse_expr tokens in
   match tokens' with
-  | [] -> expr
-  | EOF :: _ -> expr
+  | [] -> ast
+  | EOF :: _ -> ast
   | _ ->
     failwith (Printf.sprintf "Unexpected token: %s" (string_of_token (List.hd tokens')))
 ;;
