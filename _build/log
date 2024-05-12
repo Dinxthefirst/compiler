@@ -1,0 +1,17 @@
+# dune exec compiler
+# OCAMLPARAM: unset
+# Shared cache: disabled
+# Shared cache location:
+# C:\Users\Oliver\AppData\Local\Microsoft\Windows\INetCache\dune\db
+# Workspace root: "C:\\Users\\Oliver\\Desktop\\projects\\compiler\\compiler"
+# Auto-detected concurrency: 6
+# Dune context:
+#  { name = "default"
+#  ; kind = "default"
+#  ; profile = Dev
+#  ; merlin = true
+#  ; fdo_target_exe = None
+#  ; build_dir = In_build_dir "default"
+#  ; instrument_with = []
+#  }
+$ C:\Users\Oliver\AppData\Local\Programs\DKMLNA~1\bin\ocamlc.opt.exe -config > C:\Users\Oliver\AppData\Local\Temp\dune_adbad0_output
