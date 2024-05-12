@@ -1,0 +1,73 @@
+# OCaml/Dune build artifacts
+_build
+*.install
+.dune
+*.opam
+
+# Compiled Object files
+*.slo
+*.lo
+*.o
+*.obj
+
+# Precompiled Headers
+*.gch
+*.pch
+
+# Compiled Dynamic libraries
+*.so
+*.dylib
+*.dll
+
+# Fortran module files
+*.mod
+*.smod
+
+# Compiled Static libraries
+*.lai
+*.la
+*.a
+*.lib
+
+# Executables
+*.exe
+*.out
+*.app
+
+# Logs and databases
+*.log
+*.sql
+*.sqlite
+
+# OS generated files
+.DS_Store
+.DS_Store?
+._*
+.Spotlight-V100
+.Trashes
+ehthumbs.db
+Thumbs.db
+
+# Editor files
+*.swp
+*.swo
+*.swn
+~$*
+.vscode
+*.bak
+*.tmp
+*.1~
+*.~*
+*.sublime-project
+*.sublime-workspace
+*.komodoproject
+.idea/
+*.iml
+*.ipr
+*.iws
+*.dat
+*.dat.old
+*.history
+*.shistory
+.history/
+.sessions/
