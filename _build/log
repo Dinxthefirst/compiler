@@ -1,4 +1,4 @@
-# dune exec compiler
+# dune fmt
 # OCAMLPARAM: unset
 # Shared cache: disabled
 # Shared cache location:
@@ -14,4 +14,16 @@
 #  ; build_dir = In_build_dir "default"
 #  ; instrument_with = []
 #  }
-$ C:\Users\Oliver\AppData\Local\Programs\DKMLNA~1\bin\ocamlc.opt.exe -config > C:\Users\Oliver\AppData\Local\Temp\dune_adbad0_output
+$ C:\Users\Oliver\AppData\Local\Programs\DKMLNA~1\bin\ocamlc.opt.exe -config > C:\Users\Oliver\AppData\Local\Temp\dune_ddb44f_output
+$ (cd _build/default && C:\Users\Oliver\AppData\Local\opam\playground\bin\ocamlformat.exe --impl bin/Parser/ast.ml) > _build/default/bin/Parser/.formatted/ast.ml
+> ocamlformat: Error while parsing C:\Users\Oliver\Desktop\projects\compiler\compiler\.ocamlformat:
+>              Project should be formatted using ocamlformat version "0.26.2", but the installed version is "0.26.1"
+[1]
+$ (cd _build/default && C:\Users\Oliver\AppData\Local\opam\playground\bin\ocamlformat.exe --impl bin/main.ml) > _build/default/bin/.formatted/main.ml
+> ocamlformat: Error while parsing C:\Users\Oliver\Desktop\projects\compiler\compiler\.ocamlformat:
+>              Project should be formatted using ocamlformat version "0.26.2", but the installed version is "0.26.1"
+[1]
+$ (cd _build/default && C:\Users\Oliver\AppData\Local\opam\playground\bin\ocamlformat.exe --impl test/test_compiler.ml) > _build/default/test/.formatted/test_compiler.ml
+> ocamlformat: Error while parsing C:\Users\Oliver\Desktop\projects\compiler\compiler\.ocamlformat:
+>              Project should be formatted using ocamlformat version "0.26.2", but the installed version is "0.26.1"
+[1]
