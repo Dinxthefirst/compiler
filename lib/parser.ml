@@ -29,6 +29,9 @@ and parse_high_precedence' left tokens =
   | DIVIDE :: tokens' ->
     let right, tokens'' = parse_atom tokens' in
     parse_high_precedence' (BinOp (left, Div, right)) tokens''
+  | MODULO :: tokens' ->
+    let right, tokens'' = parse_atom tokens' in
+    parse_high_precedence' (BinOp (left, Mod, right)) tokens''
   | _ -> left, tokens
 
 and parse_atom tokens =
@@ -42,8 +45,28 @@ and parse_atom tokens =
     (match tokens'' with
      | RPAREN :: tokens''' -> expr, tokens'''
      | _ -> failwith "Expected ')'")
+  | DECLARATION :: VAR v :: ASSIGNMENT :: tokens' ->
+    let expr, tokens'' = parse_expr tokens' in
+    Decl (v, expr), tokens''
+  | VAR v :: tokens' -> Var v, tokens'
   | token ->
     failwith (Printf.sprintf "Unexpected token: %s" (string_of_token (List.hd token)))
+;;
+
+let rec split_on_semicolon acc tokens =
+  match tokens with
+  | [] -> List.rev acc, []
+  | SEMICOLON :: tokens' -> List.rev acc, tokens'
+  | token :: tokens' -> split_on_semicolon (token :: acc) tokens'
+;;
+
+let rec parse_statements tokens =
+  match tokens with
+  | [] -> []
+  | _ ->
+    let stmt_tokens, tokens' = split_on_semicolon [] tokens in
+    let stmt, _ = parse_expr stmt_tokens in
+    stmt :: parse_statements tokens'
 ;;
 
 let parse tokens =

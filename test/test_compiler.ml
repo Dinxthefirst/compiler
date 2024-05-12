@@ -57,6 +57,12 @@ let test_negation_with_parentheses () =
   check string "correct result" result expected
 ;;
 
+let test_declaration () =
+  let code = "val x = 1 + 2; x" in
+  let result = compile_and_evaluate code in
+  let expected = "3" in
+  check string "correct result" result expected
+
 let suite =
   [ "addition", `Quick, test_addition
   ; "subtraction", `Quick, test_subtraction
@@ -66,6 +72,7 @@ let suite =
   ; "parentheses", `Quick, test_parentheses
   ; "negation", `Quick, test_negation
   ; "negation with parentheses", `Quick, test_negation_with_parentheses
+  ; "declaration", `Quick, test_declaration
   ]
 ;;
 
