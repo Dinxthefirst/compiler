@@ -1,4 +1,4 @@
 (executable
- (public_name compiler)
  (name main)
+ (public_name compiler)
  (libraries compiler))

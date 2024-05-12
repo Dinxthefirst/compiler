@@ -1,4 +1,4 @@
-type binop =
+type op =
   | Add
   | Sub
   | Mul
@@ -6,4 +6,4 @@ type binop =
 
 type expr =
   | Int of int
-  | BinOp of binop * expr * expr
+  | BinOp of expr * op * expr
