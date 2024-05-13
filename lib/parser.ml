@@ -50,30 +50,26 @@ and parse_atom tokens =
     Decl (v, expr), tokens''
   | VAR v :: tokens' -> Var v, tokens'
   | token ->
-    failwith (Printf.sprintf "Unexpected token: %s" (string_of_token (List.hd token)))
-;;
-
-let rec split_on_semicolon acc tokens =
-  match tokens with
-  | [] -> List.rev acc, []
-  | SEMICOLON :: tokens' -> List.rev acc, tokens'
-  | token :: tokens' -> split_on_semicolon (token :: acc) tokens'
+    failwith
+      (Printf.sprintf "Unexpected token: %s" (string_of_token (List.hd token)))
 ;;
 
 let rec parse_statements tokens =
-  match tokens with
-  | [] -> []
-  | _ ->
-    let stmt_tokens, tokens' = split_on_semicolon [] tokens in
-    let stmt, _ = parse_expr stmt_tokens in
-    stmt :: parse_statements tokens'
+  let expr, tokens' = parse_expr tokens in
+  match tokens' with
+  | SEMICOLON :: tokens'' ->
+    let expr', tokens''' = parse_statements tokens'' in
+    Seq (expr, expr'), tokens'''
+  | _ -> expr, tokens'
 ;;
 
 let parse tokens =
-  let ast, tokens' = parse_expr tokens in
+  let ast, tokens' = parse_statements tokens in
   match tokens' with
-  | [] -> ast
-  | EOF :: _ -> ast
+  | EOF :: [] -> ast
   | _ ->
-    failwith (Printf.sprintf "Unexpected token: %s" (string_of_token (List.hd tokens')))
+    failwith
+      (Printf.sprintf
+         "Unexpected token: %s"
+         (string_of_token (List.hd tokens')))
 ;;

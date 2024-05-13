@@ -57,11 +57,33 @@ let test_negation_with_parentheses () =
   check string "correct result" result expected
 ;;
 
-let test_declaration () =
-  let code = "val x = 1 + 2; x" in
+let test_semicolon () =
+  let code = "1; 2" in
+  let result = compile_and_evaluate code in
+  let expected = "2" in
+  check string "correct result" result expected
+;;
+
+let test_multiple_semicolons () =
+  let code = "1; 2; 3" in
   let result = compile_and_evaluate code in
   let expected = "3" in
   check string "correct result" result expected
+;;
+
+let test_declaration () =
+  let code = "val x = 2; x" in
+  let result = compile_and_evaluate code in
+  let expected = "2" in
+  check string "correct result" result expected
+;;
+
+let test_multiple_declarations () =
+  let code = "val x = 2; val y = 3; x + y" in
+  let result = compile_and_evaluate code in
+  let expected = "5" in
+  check string "correct result" result expected
+;;
 
 let suite =
   [ "addition", `Quick, test_addition
@@ -72,7 +94,10 @@ let suite =
   ; "parentheses", `Quick, test_parentheses
   ; "negation", `Quick, test_negation
   ; "negation with parentheses", `Quick, test_negation_with_parentheses
+  ; "semicolon", `Quick, test_semicolon
+  ; "multiple semicolons", `Quick, test_multiple_semicolons
   ; "declaration", `Quick, test_declaration
+  ; "multiple declarations", `Quick, test_multiple_declarations
   ]
 ;;
 

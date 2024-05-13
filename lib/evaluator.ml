@@ -23,6 +23,9 @@ let rec evaluate_expr env = function
     let env, v = evaluate_expr env e in
     let env' = VarMap.add x v env in
     evaluate_expr env' e
+  | Seq (e1, e2) ->
+    let env', _ = evaluate_expr env e1 in
+    evaluate_expr env' e2
 ;;
 
 let evaluate expr =
