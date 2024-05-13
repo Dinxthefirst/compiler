@@ -29,6 +29,13 @@ let test_division () =
   check string "correct result" result expected
 ;;
 
+let test_modulo () =
+  let code = "10 % 3" in
+  let result = compile_and_evaluate code in
+  let expected = "1" in
+  check string "correct result" result expected
+;;
+
 let test_big_expression () =
   let code = "1 + 2 * 3 - 4 / 2" in
   let result = compile_and_evaluate code in
@@ -90,6 +97,7 @@ let suite =
   ; "subtraction", `Quick, test_subtraction
   ; "multiplication", `Quick, test_multiplication
   ; "division", `Quick, test_division
+  ; "modulo", `Quick, test_modulo
   ; "big expression", `Quick, test_big_expression
   ; "parentheses", `Quick, test_parentheses
   ; "negation", `Quick, test_negation
