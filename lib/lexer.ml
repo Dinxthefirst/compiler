@@ -18,7 +18,25 @@ let rec lex_pos str pos =
      | '*' -> TIMES :: lex_pos str (pos + 1)
      | '/' -> DIVIDE :: lex_pos str (pos + 1)
      | '%' -> MODULO :: lex_pos str (pos + 1)
+     | 'i' when str.[pos + 1] = 'f' -> IF :: lex_pos str (pos + 2)
+     | 't'
+       when str.[pos + 1] = 'h' && str.[pos + 2] = 'e' && str.[pos + 3] = 'n' ->
+       THEN :: lex_pos str (pos + 4)
+     | 'e'
+       when str.[pos + 1] = 'l' && str.[pos + 2] = 's' && str.[pos + 3] = 'e' ->
+       ELSE :: lex_pos str (pos + 4)
+     | '=' when str.[pos + 1] = '=' -> EQ :: lex_pos str (pos + 2)
      | '=' -> ASSIGNMENT :: lex_pos str (pos + 1)
+     | 't'
+       when str.[pos + 1] = 'r' && str.[pos + 2] = 'u' && str.[pos + 3] = 'e' ->
+       BOOL true :: lex_pos str (pos + 4)
+     | 'f'
+       when str.[pos + 1] = 'a'
+            && str.[pos + 2] = 'l'
+            && str.[pos + 3] = 's'
+            && str.[pos + 4] = 'e' -> BOOL false :: lex_pos str (pos + 5)
+     | '<' when str.[pos + 1] = '=' -> LTEQ :: lex_pos str (pos + 2)
+     | '<' -> LT :: lex_pos str (pos + 1)
      | _ ->
        if str.[pos] >= 'a' && str.[pos] <= 'z'
        then (

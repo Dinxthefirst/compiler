@@ -3,6 +3,17 @@ open Ast
 
 let rec parse_expr tokens =
   match tokens with
+  | IF :: tokens' ->
+    let cond, tokens'' = parse_expr tokens' in
+    (match tokens'' with
+     | THEN :: tokens''' ->
+       let then_expr, tokens'''' = parse_expr tokens''' in
+       (match tokens'''' with
+        | ELSE :: tokens''''' ->
+          let else_expr, tokens'''''' = parse_expr tokens''''' in
+          If (cond, then_expr, else_expr), tokens''''''
+        | _ -> failwith "Expected 'else'")
+     | _ -> failwith "Expected 'then'")
   | LBRACE :: tokens' ->
     let stmts, tokens'' = parse_block tokens' in
     Block stmts, tokens''
@@ -20,6 +31,15 @@ and parse_low_precedence' left tokens =
   | MINUS :: tokens' ->
     let right, tokens'' = parse_high_precedence tokens' in
     parse_low_precedence' (BinOp (left, Sub, right)) tokens''
+  | EQ :: tokens' ->
+    let right, tokens'' = parse_high_precedence tokens' in
+    parse_low_precedence' (BinOp (left, Eq, right)) tokens''
+  | LT :: tokens' ->
+    let right, tokens'' = parse_high_precedence tokens' in
+    parse_low_precedence' (BinOp (left, Lt, right)) tokens''
+  | LTEQ :: tokens' ->
+    let right, tokens'' = parse_high_precedence tokens' in
+    parse_low_precedence' (BinOp (left, Lte, right)) tokens''
   | _ -> left, tokens
 
 and parse_high_precedence tokens =
@@ -42,6 +62,8 @@ and parse_high_precedence' left tokens =
 and parse_atom tokens =
   match tokens with
   | INT i :: tokens' -> Int i, tokens'
+  | BOOL b :: tokens' -> Bool b, tokens'
+  | VAR v :: tokens' -> Var v, tokens'
   | MINUS :: tokens' ->
     let right, tokens'' = parse_atom tokens' in
     UnOp (Neg, right), tokens''
@@ -53,7 +75,6 @@ and parse_atom tokens =
   | DECLARATION :: VAR v :: ASSIGNMENT :: tokens' ->
     let expr, tokens'' = parse_expr tokens' in
     Decl (v, expr), tokens''
-  | VAR v :: tokens' -> Var v, tokens'
   | token ->
     failwith
       (Printf.sprintf "Unexpected token: %s" (string_of_token (List.hd token)))
@@ -75,8 +96,6 @@ and parse_block tokens =
 
 let parse tokens =
   let ast, tokens' = parse_statements tokens in
-  Printf.printf "AST:\n%s\n" (string_of_ast ast);
-  Printf.printf "Pretty-printed AST:\n%s\n" (pretty_string_of_ast ast);
   match tokens' with
   | EOF :: [] -> ast
   | _ ->

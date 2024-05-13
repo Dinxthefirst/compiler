@@ -1,6 +1,7 @@
 type token =
   | INT of int
   | VAR of string
+  | BOOL of bool
   | DECLARATION
   | ASSIGNMENT
   | PLUS
@@ -8,6 +9,12 @@ type token =
   | TIMES
   | DIVIDE
   | MODULO
+  | IF
+  | THEN
+  | ELSE
+  | EQ
+  | LT
+  | LTEQ
   | LBRACE
   | RBRACE
   | LPAREN
@@ -18,6 +25,7 @@ type token =
 let string_of_token = function
   | INT i -> "INT " ^ string_of_int i
   | VAR s -> "VAR " ^ s
+  | BOOL b -> "BOOL " ^ string_of_bool b
   | DECLARATION -> "DECLARATION"
   | ASSIGNMENT -> "ASSIGNMENT"
   | PLUS -> "PLUS"
@@ -25,6 +33,12 @@ let string_of_token = function
   | TIMES -> "TIMES"
   | DIVIDE -> "DIVIDE"
   | MODULO -> "MODULO"
+  | IF -> "IF"
+  | THEN -> "THEN"
+  | ELSE -> "ELSE"
+  | EQ -> "EQ"
+  | LT -> "LT"
+  | LTEQ -> "LTEQ"
   | LBRACE -> "LBRACE"
   | RBRACE -> "RBRACE"
   | LPAREN -> "LPAREN"

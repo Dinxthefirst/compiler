@@ -109,6 +109,57 @@ let test_big_block () =
   check string "correct result" result expected
 ;;
 
+let test_bool () =
+  let code = "true" in
+  let result = compile_and_evaluate code in
+  let expected = "1" in
+  check string "correct result" result expected
+;;
+
+let test_if () =
+  let code = "if true then 1 else 2" in
+  let result = compile_and_evaluate code in
+  let expected = "1" in
+  check string "correct result" result expected
+;;
+
+let test_if_else () =
+  let code = "if false then 1 else 2" in
+  let result = compile_and_evaluate code in
+  let expected = "2" in
+  check string "correct result" result expected
+;;
+
+let test_equals () =
+  let code = "1 == 1" in
+  let result = compile_and_evaluate code in
+  let expected = "1" in
+  check string "correct result" result expected
+;;
+
+let test_less_than () =
+  let code = "1 < 2" in
+  let result = compile_and_evaluate code in
+  let expected = "1" in
+  check string "correct result" result expected
+;;
+
+let test_less_than_equals () =
+  let code = "3 <= 2" in
+  let result = compile_and_evaluate code in
+  let expected = "0" in
+  check string "correct result" result expected
+;;
+
+let test_big_if_else () =
+  let code =
+    "if { val x = 1; x == 1 } then { if 2 <= 2 then 69 else 2 } else 3"
+  in
+  let result = compile_and_evaluate code in
+  let expected = "69" in
+  check string "correct result" result expected
+;;
+
 let suite =
   [ "addition", `Quick, test_addition
   ; "subtraction", `Quick, test_subtraction
@@ -125,6 +176,13 @@ let suite =
   ; "multiple declarations", `Quick, test_multiple_declarations
   ; "block", `Quick, test_block
   ; "big block", `Quick, test_big_block
+  ; "bool", `Quick, test_bool
+  ; "if", `Quick, test_if
+  ; "if else", `Quick, test_if_else
+  ; "equals", `Quick, test_equals
+  ; "less than", `Quick, test_less_than
+  ; "less than equals", `Quick, test_less_than_equals
+  ; "big if else", `Quick, test_big_if_else
   ]
 ;;
 
