@@ -26,6 +26,7 @@ let rec evaluate_expr env = function
   | Seq (e1, e2) ->
     let env', _ = evaluate_expr env e1 in
     evaluate_expr env' e2
+  | Block e -> evaluate_expr env e
 ;;
 
 let evaluate expr =

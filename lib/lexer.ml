@@ -7,6 +7,8 @@ let rec lex_pos str pos =
     (match str.[pos] with
      | ' ' | '\t' | '\n' | '\r' -> lex_pos str (pos + 1)
      | ';' -> SEMICOLON :: lex_pos str (pos + 1)
+     | '{' -> LBRACE :: lex_pos str (pos + 1)
+     | '}' -> RBRACE :: lex_pos str (pos + 1)
      | '(' -> LPAREN :: lex_pos str (pos + 1)
      | ')' -> RPAREN :: lex_pos str (pos + 1)
      | 'v' when str.[pos + 1] = 'a' && str.[pos + 2] = 'l' ->

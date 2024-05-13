@@ -8,6 +8,8 @@ type token =
   | TIMES
   | DIVIDE
   | MODULO
+  | LBRACE
+  | RBRACE
   | LPAREN
   | RPAREN
   | SEMICOLON
@@ -23,6 +25,8 @@ let string_of_token = function
   | TIMES -> "TIMES"
   | DIVIDE -> "DIVIDE"
   | MODULO -> "MODULO"
+  | LBRACE -> "LBRACE"
+  | RBRACE -> "RBRACE"
   | LPAREN -> "LPAREN"
   | RPAREN -> "RPAREN"
   | SEMICOLON -> "SEMICOLON"

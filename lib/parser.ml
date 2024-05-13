@@ -1,7 +1,12 @@
 open Tokens
 open Ast
 
-let rec parse_expr tokens = parse_low_precedence tokens
+let rec parse_expr tokens =
+  match tokens with
+  | LBRACE :: tokens' ->
+    let stmts, tokens'' = parse_block tokens' in
+    Block stmts, tokens''
+  | _ -> parse_low_precedence tokens
 
 and parse_low_precedence tokens =
   let left, tokens' = parse_high_precedence tokens in
@@ -52,19 +57,26 @@ and parse_atom tokens =
   | token ->
     failwith
       (Printf.sprintf "Unexpected token: %s" (string_of_token (List.hd token)))
-;;
 
-let rec parse_statements tokens =
+and parse_statements tokens =
   let expr, tokens' = parse_expr tokens in
   match tokens' with
   | SEMICOLON :: tokens'' ->
     let expr', tokens''' = parse_statements tokens'' in
     Seq (expr, expr'), tokens'''
   | _ -> expr, tokens'
+
+and parse_block tokens =
+  let stmts, tokens' = parse_statements tokens in
+  match tokens' with
+  | RBRACE :: tokens'' -> stmts, tokens''
+  | _ -> failwith "Expected '}'"
 ;;
 
 let parse tokens =
   let ast, tokens' = parse_statements tokens in
+  Printf.printf "AST:\n%s\n" (string_of_ast ast);
+  Printf.printf "Pretty-printed AST:\n%s\n" (pretty_string_of_ast ast);
   match tokens' with
   | EOF :: [] -> ast
   | _ ->

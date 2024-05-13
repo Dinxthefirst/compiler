@@ -5,6 +5,7 @@ type expr =
   | Var of var
   | Decl of var * expr
   | Seq of expr * expr
+  | Block of expr
 
 and binOp =
   | Add
@@ -30,6 +31,7 @@ let rec string_of_ast = function
   | Var v -> "Var \"" ^ v ^ "\""
   | Decl (v, e) -> "Decl (\"" ^ v ^ "\", " ^ string_of_ast e ^ ")"
   | Seq (e1, e2) -> "Seq (" ^ string_of_ast e1 ^ ", " ^ string_of_ast e2 ^ ")"
+  | Block e -> "Block {" ^ string_of_ast e ^ "}"
 
 and string_of_binOp = function
   | Add -> "Add"
@@ -56,6 +58,7 @@ let rec pretty_string_of_ast = function
   | Var v -> v
   | Decl (v, e) -> "val " ^ v ^ " = " ^ pretty_string_of_ast e
   | Seq (e1, e2) -> pretty_string_of_ast e1 ^ ";\n" ^ pretty_string_of_ast e2
+  | Block e -> "{\n" ^ pretty_string_of_ast e ^ "\n}"
 
 and pretty_string_of_binOp = function
   | Add -> "+"

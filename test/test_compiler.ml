@@ -92,6 +92,23 @@ let test_multiple_declarations () =
   check string "correct result" result expected
 ;;
 
+let test_block () =
+  let code = "{ 2 }" in
+  let result = compile_and_evaluate code in
+  let expected = "2" in
+  check string "correct result" result expected
+;;
+
+let test_big_block () =
+  let code =
+    "{ val x = -1; val y = 1; val z = { val a = 45; val b = 24; a + b }; x + y \
+     + z }"
+  in
+  let result = compile_and_evaluate code in
+  let expected = "69" in
+  check string "correct result" result expected
+;;
+
 let suite =
   [ "addition", `Quick, test_addition
   ; "subtraction", `Quick, test_subtraction
@@ -106,6 +123,8 @@ let suite =
   ; "multiple semicolons", `Quick, test_multiple_semicolons
   ; "declaration", `Quick, test_declaration
   ; "multiple declarations", `Quick, test_multiple_declarations
+  ; "block", `Quick, test_block
+  ; "big block", `Quick, test_big_block
   ]
 ;;
 
