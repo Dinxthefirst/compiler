@@ -181,6 +181,34 @@ let test_big_if_else () =
   check string "correct result" result expected
 ;;
 
+let test_bigger_expression () =
+  let code =
+    "{ \n\
+    \  val x = {\n\
+    \    val a = 100 * 1;\n\
+    \    val b = 1;\n\
+    \    if false then b else {\n\
+    \      a + b\n\
+    \    }\n\
+    \  };\n\
+    \  val y = -(!(0));\n\
+    \  val z = (1 < 2) + 1;\n\
+    \  val w = (true + true) * (true + true);\n\
+    \  val v = (10 % 3 - true) * false;\n\
+    \  x + y + z + w + v \n\
+    \ }"
+    (* x = 101
+       y = -1
+       z = 2
+       w = 4
+       v = 0
+       res = 106 *)
+  in
+  let result = compile_and_evaluate code in
+  let expected = "106" in
+  check string "correct result" result expected
+;;
+
 let suite =
   [ "addition", `Quick, test_addition
   ; "subtraction", `Quick, test_subtraction
@@ -207,6 +235,7 @@ let suite =
   ; "less than", `Quick, test_less_than
   ; "less than equals", `Quick, test_less_than_equals
   ; "big if else", `Quick, test_big_if_else
+  ; "bigger expression", `Quick, test_bigger_expression
   ]
 ;;
 

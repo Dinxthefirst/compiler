@@ -50,3 +50,8 @@ let string_of_token = function
   | SEMICOLON -> "SEMICOLON"
   | EOF -> "EOF"
 ;;
+
+let rec string_of_tokens = function
+  | [] -> ""
+  | t :: ts -> string_of_token t ^ " " ^ string_of_tokens ts
+;;
