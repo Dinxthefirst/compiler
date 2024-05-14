@@ -4,47 +4,51 @@ let rec lex_pos str pos =
   match pos, String.length str with
   | pos, len when pos >= len -> [ EOF ]
   | pos, _ ->
+    let pos = skip_whitespace str pos in
     (match str.[pos] with
-     | ' ' | '\t' | '\n' | '\r' -> lex_pos str (pos + 1)
      | ';' -> SEMICOLON :: lex_pos str (pos + 1)
      | '{' -> LBRACE :: lex_pos str (pos + 1)
      | '}' -> RBRACE :: lex_pos str (pos + 1)
      | '(' -> LPAREN :: lex_pos str (pos + 1)
      | ')' -> RPAREN :: lex_pos str (pos + 1)
-     | 'v' when str.[pos + 1] = 'a' && str.[pos + 2] = 'l' ->
-       DECLARATION :: lex_pos str (pos + 3)
      | '+' -> PLUS :: lex_pos str (pos + 1)
      | '-' -> MINUS :: lex_pos str (pos + 1)
      | '*' -> TIMES :: lex_pos str (pos + 1)
      | '/' -> DIVIDE :: lex_pos str (pos + 1)
      | '%' -> MODULO :: lex_pos str (pos + 1)
-     | 'i' when str.[pos + 1] = 'f' -> IF :: lex_pos str (pos + 2)
-     | 't'
-       when str.[pos + 1] = 'h' && str.[pos + 2] = 'e' && str.[pos + 3] = 'n' ->
-       THEN :: lex_pos str (pos + 4)
-     | 'e'
-       when str.[pos + 1] = 'l' && str.[pos + 2] = 's' && str.[pos + 3] = 'e' ->
-       ELSE :: lex_pos str (pos + 4)
-     | '=' when str.[pos + 1] = '=' -> EQ :: lex_pos str (pos + 2)
-     | '=' -> ASSIGNMENT :: lex_pos str (pos + 1)
-     | 't'
-       when str.[pos + 1] = 'r' && str.[pos + 2] = 'u' && str.[pos + 3] = 'e' ->
-       BOOL true :: lex_pos str (pos + 4)
-     | 'f'
-       when str.[pos + 1] = 'a'
-            && str.[pos + 2] = 'l'
-            && str.[pos + 3] = 's'
-            && str.[pos + 4] = 'e' -> BOOL false :: lex_pos str (pos + 5)
-     | '<' when str.[pos + 1] = '=' -> LTEQ :: lex_pos str (pos + 2)
-     | '<' -> LT :: lex_pos str (pos + 1)
-     | _ ->
-       if str.[pos] >= 'a' && str.[pos] <= 'z'
-       then (
-         let var, pos' = lex_var str pos in
-         VAR var :: lex_pos str pos')
-       else (
-         let num, pos' = lex_int str pos in
-         INT num :: lex_pos str pos'))
+     | '=' ->
+       (match peek str (pos + 1) with
+        | Some '=' -> EQ :: lex_pos str (pos + 2)
+        | _ -> ASSIGNMENT :: lex_pos str (pos + 1))
+     | '<' ->
+       (match peek str (pos + 1) with
+        | Some '=' -> LTEQ :: lex_pos str (pos + 2)
+        | _ -> LT :: lex_pos str (pos + 1))
+     | '0' .. '9' ->
+       let num, pos' = lex_int str pos in
+       INT num :: lex_pos str pos'
+     | 'a' .. 'z' | 'A' .. 'Z' ->
+       let rec aux pos' =
+         if pos' < String.length str && is_alphanumeric str.[pos']
+         then aux (pos' + 1)
+         else pos'
+       in
+       let end_pos = aux pos in
+       let var = String.sub str pos (end_pos - pos) in
+       let token =
+         match var with
+         | "val" -> DECLARATION
+         | "if" -> IF
+         | "then" -> THEN
+         | "else" -> ELSE
+         | "true" -> BOOL true
+         | "false" -> BOOL false
+         | _ -> VAR var
+       in
+       token :: lex_pos str end_pos
+     | _ -> raise (Invalid_argument "lex_pos"))
+
+and peek str pos = if pos >= String.length str then None else Some str.[pos]
 
 and lex_int str pos =
   let rec loop acc pos =
@@ -59,16 +63,27 @@ and lex_int str pos =
   in
   loop 0 pos
 
-and lex_var str pos =
-  let rec loop acc pos =
-    if pos >= String.length str
-    then acc, pos
-    else (
-      match str.[pos] with
-      | 'a' .. 'z' -> loop (acc ^ String.make 1 str.[pos]) (pos + 1)
-      | _ -> acc, pos)
-  in
-  loop "" pos
-;;
+and skip_whitespace str pos =
+  if pos >= String.length str
+  then pos
+  else (
+    match str.[pos] with
+    | ' ' | '\t' | '\n' | '\r' -> skip_whitespace str (pos + 1)
+    | _ -> pos)
+
+and is_alphanumeric c = is_alpha c || is_digit c || c = '_'
+and is_alpha c = (c >= 'a' && c <= 'z') || (c >= 'A' && c <= 'Z')
+and is_digit c = c >= '0' && c <= '9'
+
+(* and lex_var str pos =
+   let rec loop acc pos =
+   if pos >= String.length str
+   then acc, pos
+   else (
+   match str.[pos] with
+   | 'a' .. 'z' -> loop (acc ^ String.make 1 str.[pos]) (pos + 1)
+   | _ -> acc, pos)
+   in
+   loop "" pos *)
 
 let lex str = lex_pos str 0
