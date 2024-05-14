@@ -26,41 +26,105 @@ let rec parse_expr tokens =
 and parse_low_precedence tokens =
   let rec parse tokens left =
     match tokens with
-    | PLUS :: tokens' ->
-      let right, tokens'' = parse_high_precedence tokens' in
-      parse tokens'' (BinOp (left, Add, right))
-    | MINUS :: tokens' ->
-      let right, tokens'' = parse_high_precedence tokens' in
-      parse tokens'' (BinOp (left, Sub, right))
-    | EQ :: tokens' ->
-      let right, tokens'' = parse_high_precedence tokens' in
-      parse tokens'' (BinOp (left, Eq, right))
-    | NEQ :: tokens' ->
-      let right, tokens'' = parse_high_precedence tokens' in
-      parse tokens'' (BinOp (left, Neq, right))
-    | LT :: tokens' ->
-      let right, tokens'' = parse_high_precedence tokens' in
-      parse tokens'' (BinOp (left, Lt, right))
-    | LTEQ :: tokens' ->
-      let right, tokens'' = parse_high_precedence tokens' in
-      parse tokens'' (BinOp (left, Lte, right))
+    | OR :: tokens' ->
+      let right, tokens'' = parse_and tokens' in
+      parse tokens'' (BinOp (left, Or, right))
     | _ -> left, tokens
   in
-  let left, tokens' = parse_high_precedence tokens in
+  let left, tokens' = parse_and tokens in
   parse tokens' left
 
-and parse_high_precedence tokens =
+and parse_and tokens =
   let rec parse tokens left =
     match tokens with
-    | TIMES :: tokens' ->
+    | AND :: tokens' ->
+      let right, tokens'' = parse_not tokens' in
+      parse tokens'' (BinOp (left, And, right))
+    | _ -> left, tokens
+  in
+  let left, tokens' = parse_not tokens in
+  parse tokens' left
+
+and parse_not tokens =
+  match tokens with
+  | BANG :: tokens' ->
+    let right, tokens'' = parse_relational tokens' in
+    UnOp (Not, right), tokens''
+  | _ -> parse_relational tokens
+
+and parse_relational tokens =
+  let rec parse tokens left =
+    match tokens with
+    | EQ :: tokens'
+    | NEQ :: tokens'
+    | LT :: tokens'
+    | LTEQ :: tokens'
+    | GT :: tokens'
+    | GTEQ :: tokens' ->
+      let right, tokens'' = parse_addition tokens' in
+      parse
+        tokens''
+        (BinOp
+           ( left
+           , (match List.hd tokens with
+              | EQ -> Eq
+              | NEQ -> Neq
+              | LT -> Lt
+              | LTEQ -> Lte
+              | GT -> Gt
+              | GTEQ -> Gte
+              | _ -> failwith "Unexpected token")
+           , right ))
+    | _ -> left, tokens
+  in
+  let left, tokens' = parse_addition tokens in
+  parse tokens' left
+
+and parse_addition tokens =
+  let rec parse tokens left =
+    match tokens with
+    | PLUS :: tokens' | MINUS :: tokens' ->
+      let right, tokens'' = parse_multiplication tokens' in
+      parse
+        tokens''
+        (BinOp
+           ( left
+           , (match List.hd tokens with
+              | PLUS -> Add
+              | MINUS -> Sub
+              | _ -> failwith "Unexpected token")
+           , right ))
+    | _ -> left, tokens
+  in
+  let left, tokens' = parse_multiplication tokens in
+  parse tokens' left
+
+and parse_multiplication tokens =
+  let rec parse tokens left =
+    match tokens with
+    | TIMES :: tokens' | DIVIDE :: tokens' | MODULO :: tokens' ->
+      let right, tokens'' = parse_exponent tokens' in
+      parse
+        tokens''
+        (BinOp
+           ( left
+           , (match List.hd tokens with
+              | TIMES -> Mul
+              | DIVIDE -> Div
+              | MODULO -> Mod
+              | _ -> failwith "Unexpected token")
+           , right ))
+    | _ -> left, tokens
+  in
+  let left, tokens' = parse_exponent tokens in
+  parse tokens' left
+
+and parse_exponent tokens =
+  let rec parse tokens left =
+    match tokens with
+    | POWER :: tokens' ->
       let right, tokens'' = parse_atom tokens' in
-      parse tokens'' (BinOp (left, Mul, right))
-    | DIVIDE :: tokens' ->
-      let right, tokens'' = parse_atom tokens' in
-      parse tokens'' (BinOp (left, Div, right))
-    | MODULO :: tokens' ->
-      let right, tokens'' = parse_atom tokens' in
-      parse tokens'' (BinOp (left, Mod, right))
+      parse tokens'' (BinOp (left, Pow, right))
     | _ -> left, tokens
   in
   let left, tokens' = parse_atom tokens in

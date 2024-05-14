@@ -16,10 +16,15 @@ let rec evaluate_expr env = function
      | Mul -> env'', v1 * v2
      | Div -> env'', v1 / v2
      | Mod -> env'', v1 mod v2
+     | Pow -> env'', int_of_float (float_of_int v1 ** float_of_int v2)
      | Eq -> env'', if v1 = v2 then 1 else 0
      | Neq -> env'', if v1 <> v2 then 1 else 0
      | Lt -> env'', if v1 < v2 then 1 else 0
-     | Lte -> env'', if v1 <= v2 then 1 else 0)
+     | Lte -> env'', if v1 <= v2 then 1 else 0
+     | Gt -> env'', if v1 > v2 then 1 else 0
+     | Gte -> env'', if v1 >= v2 then 1 else 0
+     | And -> env'', if v1 = 1 && v2 = 1 then 1 else 0
+     | Or -> env'', if v1 = 1 || v2 = 1 then 1 else 0)
   | UnOp (op, e) ->
     let env', v = evaluate_expr env e in
     (match op with

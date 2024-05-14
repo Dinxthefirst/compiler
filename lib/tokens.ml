@@ -9,6 +9,7 @@ type token =
   | TIMES
   | DIVIDE
   | MODULO
+  | POWER
   | BANG
   | IF
   | THEN
@@ -17,11 +18,16 @@ type token =
   | NEQ
   | LT
   | LTEQ
+  | GT
+  | GTEQ
+  | AND
+  | OR
   | LBRACE
   | RBRACE
   | LPAREN
   | RPAREN
   | SEMICOLON
+  | ILLEGAL
   | EOF
 
 let string_of_token = function
@@ -35,6 +41,7 @@ let string_of_token = function
   | TIMES -> "TIMES"
   | DIVIDE -> "DIVIDE"
   | MODULO -> "MODULO"
+  | POWER -> "POWER"
   | BANG -> "BANG"
   | IF -> "IF"
   | THEN -> "THEN"
@@ -43,11 +50,16 @@ let string_of_token = function
   | NEQ -> "NEQ"
   | LT -> "LT"
   | LTEQ -> "LTEQ"
+  | GT -> "GT"
+  | GTEQ -> "GTEQ"
+  | AND -> "AND"
+  | OR -> "OR"
   | LBRACE -> "LBRACE"
   | RBRACE -> "RBRACE"
   | LPAREN -> "LPAREN"
   | RPAREN -> "RPAREN"
   | SEMICOLON -> "SEMICOLON"
+  | ILLEGAL -> "ILLEGAL"
   | EOF -> "EOF"
 ;;
 

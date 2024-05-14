@@ -15,10 +15,15 @@ and binOp =
   | Mul
   | Div
   | Mod
+  | Pow
   | Eq
   | Neq
   | Lt
   | Lte
+  | Gt
+  | Gte
+  | And
+  | Or
 
 and unOp =
   | Neg
@@ -57,10 +62,15 @@ and string_of_binOp = function
   | Mul -> "Mul"
   | Div -> "Div"
   | Mod -> "Mod"
+  | Pow -> "Pow"
   | Eq -> "Eq"
   | Neq -> "Neq"
   | Lt -> "Lt"
   | Lte -> "Lte"
+  | Gt -> "Gt"
+  | Gte -> "Gte"
+  | And -> "And"
+  | Or -> "Or"
 
 and string_of_unOp = function
   | Neg -> "Neg"
@@ -97,10 +107,15 @@ and pretty_string_of_binOp = function
   | Mul -> "*"
   | Div -> "/"
   | Mod -> "%"
+  | Pow -> "^"
   | Eq -> "=="
   | Neq -> "!="
   | Lt -> "<"
   | Lte -> "<="
+  | Gt -> ">"
+  | Gte -> ">="
+  | And -> "&&"
+  | Or -> "||"
 
 and pretty_string_of_unOp = function
   | Neg -> "-"

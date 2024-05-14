@@ -36,6 +36,13 @@ let test_modulo () =
   check string "correct result" result expected
 ;;
 
+let test_exponentiation () =
+  let code = "3^3" in
+  let result = compile_and_evaluate code in
+  let expected = "27" in
+  check string "correct result" result expected
+;;
+
 let test_big_expression () =
   let code = "1 + 2 * 3 - 4 / 2" in
   let result = compile_and_evaluate code in
@@ -144,15 +151,29 @@ let test_not_equals () =
   check string "correct result" result expected
 ;;
 
-let test_not () =
-  let code = "!true" in
+let test_greater_than () =
+  let code = "2 > 1" in
+  let result = compile_and_evaluate code in
+  let expected = "1" in
+  check string "correct result" result expected
+;;
+
+let test_greater_than_equals () =
+  let code = "2 >= 2" in
+  let result = compile_and_evaluate code in
+  let expected = "1" in
+  check string "correct result" result expected
+;;
+
+let test_and () =
+  let code = "true && false" in
   let result = compile_and_evaluate code in
   let expected = "0" in
   check string "correct result" result expected
 ;;
 
-let test_big_not () =
-  let code = "!(!true)" in
+let test_or () =
+  let code = "true || false" in
   let result = compile_and_evaluate code in
   let expected = "1" in
   check string "correct result" result expected
@@ -169,6 +190,20 @@ let test_less_than_equals () =
   let code = "3 <= 2" in
   let result = compile_and_evaluate code in
   let expected = "0" in
+  check string "correct result" result expected
+;;
+
+let test_not () =
+  let code = "!true" in
+  let result = compile_and_evaluate code in
+  let expected = "0" in
+  check string "correct result" result expected
+;;
+
+let test_big_not () =
+  let code = "!(!true)" in
+  let result = compile_and_evaluate code in
+  let expected = "1" in
   check string "correct result" result expected
 ;;
 
@@ -215,6 +250,7 @@ let suite =
   ; "multiplication", `Quick, test_multiplication
   ; "division", `Quick, test_division
   ; "modulo", `Quick, test_modulo
+  ; "exponentiation", `Quick, test_exponentiation
   ; "big expression", `Quick, test_big_expression
   ; "parentheses", `Quick, test_parentheses
   ; "negation", `Quick, test_negation
@@ -230,10 +266,14 @@ let suite =
   ; "if else", `Quick, test_if_else
   ; "equals", `Quick, test_equals
   ; "not equals", `Quick, test_not_equals
-  ; "not", `Quick, test_not
-  ; "big not", `Quick, test_big_not
   ; "less than", `Quick, test_less_than
   ; "less than equals", `Quick, test_less_than_equals
+  ; "greater than", `Quick, test_greater_than
+  ; "greater than equals", `Quick, test_greater_than_equals
+  ; "and", `Quick, test_and
+  ; "or", `Quick, test_or
+  ; "not", `Quick, test_not
+  ; "big not", `Quick, test_big_not
   ; "big if else", `Quick, test_big_if_else
   ; "bigger expression", `Quick, test_bigger_expression
   ]

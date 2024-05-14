@@ -16,6 +16,7 @@ let rec lex_pos str pos =
      | '*' -> TIMES :: lex_pos str (pos + 1)
      | '/' -> DIVIDE :: lex_pos str (pos + 1)
      | '%' -> MODULO :: lex_pos str (pos + 1)
+     | '^' -> POWER :: lex_pos str (pos + 1)
      | '!' ->
        (match peek str (pos + 1) with
         | Some '=' -> NEQ :: lex_pos str (pos + 2)
@@ -28,6 +29,18 @@ let rec lex_pos str pos =
        (match peek str (pos + 1) with
         | Some '=' -> LTEQ :: lex_pos str (pos + 2)
         | _ -> LT :: lex_pos str (pos + 1))
+     | '>' ->
+       (match peek str (pos + 1) with
+        | Some '=' -> GTEQ :: lex_pos str (pos + 2)
+        | _ -> GT :: lex_pos str (pos + 1))
+     | '&' ->
+       (match peek str (pos + 1) with
+        | Some '&' -> AND :: lex_pos str (pos + 2)
+        | _ -> ILLEGAL :: lex_pos str (pos + 1))
+     | '|' ->
+       (match peek str (pos + 1) with
+        | Some '|' -> OR :: lex_pos str (pos + 2)
+        | _ -> ILLEGAL :: lex_pos str (pos + 1))
      | '0' .. '9' ->
        let num, pos' = lex_int str pos in
        INT num :: lex_pos str pos'
@@ -50,7 +63,7 @@ let rec lex_pos str pos =
          | _ -> VAR var
        in
        token :: lex_pos str end_pos
-     | _ -> raise (Invalid_argument "lex_pos"))
+     | _ -> ILLEGAL :: lex_pos str (pos + 1))
 
 and peek str pos = if pos >= String.length str then None else Some str.[pos]
 
