@@ -16,10 +16,14 @@ and binOp =
   | Div
   | Mod
   | Eq
+  | Neq
   | Lt
   | Lte
 
-and unOp = Neg
+and unOp =
+  | Neg
+  | Not
+
 and var = string
 
 let rec string_of_ast = function
@@ -54,11 +58,13 @@ and string_of_binOp = function
   | Div -> "Div"
   | Mod -> "Mod"
   | Eq -> "Eq"
+  | Neq -> "Neq"
   | Lt -> "Lt"
   | Lte -> "Lte"
 
 and string_of_unOp = function
   | Neg -> "Neg"
+  | Not -> "Not"
 ;;
 
 let rec pretty_string_of_ast = function
@@ -92,9 +98,11 @@ and pretty_string_of_binOp = function
   | Div -> "/"
   | Mod -> "%"
   | Eq -> "=="
+  | Neq -> "!="
   | Lt -> "<"
   | Lte -> "<="
 
 and pretty_string_of_unOp = function
   | Neg -> "-"
+  | Not -> "!"
 ;;

@@ -137,6 +137,27 @@ let test_equals () =
   check string "correct result" result expected
 ;;
 
+let test_not_equals () =
+  let code = "1 != 1" in
+  let result = compile_and_evaluate code in
+  let expected = "0" in
+  check string "correct result" result expected
+;;
+
+let test_not () =
+  let code = "!true" in
+  let result = compile_and_evaluate code in
+  let expected = "0" in
+  check string "correct result" result expected
+;;
+
+let test_big_not () =
+  let code = "!(!true)" in
+  let result = compile_and_evaluate code in
+  let expected = "1" in
+  check string "correct result" result expected
+;;
+
 let test_less_than () =
   let code = "1 < 2" in
   let result = compile_and_evaluate code in
@@ -180,6 +201,9 @@ let suite =
   ; "if", `Quick, test_if
   ; "if else", `Quick, test_if_else
   ; "equals", `Quick, test_equals
+  ; "not equals", `Quick, test_not_equals
+  ; "not", `Quick, test_not
+  ; "big not", `Quick, test_big_not
   ; "less than", `Quick, test_less_than
   ; "less than equals", `Quick, test_less_than_equals
   ; "big if else", `Quick, test_big_if_else

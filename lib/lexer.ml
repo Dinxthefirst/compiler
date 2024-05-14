@@ -16,6 +16,10 @@ let rec lex_pos str pos =
      | '*' -> TIMES :: lex_pos str (pos + 1)
      | '/' -> DIVIDE :: lex_pos str (pos + 1)
      | '%' -> MODULO :: lex_pos str (pos + 1)
+     | '!' ->
+       (match peek str (pos + 1) with
+        | Some '=' -> NEQ :: lex_pos str (pos + 2)
+        | _ -> BANG :: lex_pos str (pos + 1))
      | '=' ->
        (match peek str (pos + 1) with
         | Some '=' -> EQ :: lex_pos str (pos + 2)
@@ -74,16 +78,5 @@ and skip_whitespace str pos =
 and is_alphanumeric c = is_alpha c || is_digit c || c = '_'
 and is_alpha c = (c >= 'a' && c <= 'z') || (c >= 'A' && c <= 'Z')
 and is_digit c = c >= '0' && c <= '9'
-
-(* and lex_var str pos =
-   let rec loop acc pos =
-   if pos >= String.length str
-   then acc, pos
-   else (
-   match str.[pos] with
-   | 'a' .. 'z' -> loop (acc ^ String.make 1 str.[pos]) (pos + 1)
-   | _ -> acc, pos)
-   in
-   loop "" pos *)
 
 let lex str = lex_pos str 0

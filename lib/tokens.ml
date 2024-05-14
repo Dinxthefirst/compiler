@@ -9,10 +9,12 @@ type token =
   | TIMES
   | DIVIDE
   | MODULO
+  | BANG
   | IF
   | THEN
   | ELSE
   | EQ
+  | NEQ
   | LT
   | LTEQ
   | LBRACE
@@ -33,10 +35,12 @@ let string_of_token = function
   | TIMES -> "TIMES"
   | DIVIDE -> "DIVIDE"
   | MODULO -> "MODULO"
+  | BANG -> "BANG"
   | IF -> "IF"
   | THEN -> "THEN"
   | ELSE -> "ELSE"
   | EQ -> "EQ"
+  | NEQ -> "NEQ"
   | LT -> "LT"
   | LTEQ -> "LTEQ"
   | LBRACE -> "LBRACE"

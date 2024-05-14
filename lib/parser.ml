@@ -34,6 +34,9 @@ and parse_low_precedence' left tokens =
   | EQ :: tokens' ->
     let right, tokens'' = parse_high_precedence tokens' in
     parse_low_precedence' (BinOp (left, Eq, right)) tokens''
+  | NEQ :: tokens' ->
+    let right, tokens'' = parse_high_precedence tokens' in
+    parse_low_precedence' (BinOp (left, Neq, right)) tokens''
   | LT :: tokens' ->
     let right, tokens'' = parse_high_precedence tokens' in
     parse_low_precedence' (BinOp (left, Lt, right)) tokens''
@@ -67,6 +70,9 @@ and parse_atom tokens =
   | MINUS :: tokens' ->
     let right, tokens'' = parse_atom tokens' in
     UnOp (Neg, right), tokens''
+  | BANG :: tokens' ->
+    let right, tokens'' = parse_atom tokens' in
+    UnOp (Not, right), tokens''
   | LPAREN :: tokens' ->
     let expr, tokens'' = parse_expr tokens' in
     (match tokens'' with

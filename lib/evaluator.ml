@@ -17,12 +17,14 @@ let rec evaluate_expr env = function
      | Div -> env'', v1 / v2
      | Mod -> env'', v1 mod v2
      | Eq -> env'', if v1 = v2 then 1 else 0
+     | Neq -> env'', if v1 <> v2 then 1 else 0
      | Lt -> env'', if v1 < v2 then 1 else 0
      | Lte -> env'', if v1 <= v2 then 1 else 0)
   | UnOp (op, e) ->
     let env', v = evaluate_expr env e in
     (match op with
-     | Neg -> env', -v)
+     | Neg -> env', -v
+     | Not -> env', if v = 0 then 1 else 0)
   | Decl (x, e) ->
     let env, v = evaluate_expr env e in
     let env' = VarMap.add x v env in
