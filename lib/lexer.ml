@@ -24,6 +24,7 @@ let rec lex_pos str pos =
      | '=' ->
        (match peek str (pos + 1) with
         | Some '=' -> EQ :: lex_pos str (pos + 2)
+        | Some '>' -> ARROW :: lex_pos str (pos + 2)
         | _ -> ASSIGNMENT :: lex_pos str (pos + 1))
      | '<' ->
        (match peek str (pos + 1) with
@@ -54,12 +55,16 @@ let rec lex_pos str pos =
        let var = String.sub str pos (end_pos - pos) in
        let token =
          match var with
-         | "val" -> DECLARATION
+         | "let" -> LET
+         | "fn" -> FUNCTION
          | "if" -> IF
          | "then" -> THEN
          | "else" -> ELSE
          | "true" -> BOOL true
          | "false" -> BOOL false
+         | "match" -> MATCH
+         | "with" -> WITH
+         | "case" -> CASE
          | _ -> VAR var
        in
        token :: lex_pos str end_pos

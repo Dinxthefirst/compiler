@@ -2,7 +2,8 @@ type token =
   | INT of int
   | VAR of string
   | BOOL of bool
-  | DECLARATION
+  | LET
+  | FUNCTION
   | ASSIGNMENT
   | PLUS
   | MINUS
@@ -27,6 +28,10 @@ type token =
   | LPAREN
   | RPAREN
   | SEMICOLON
+  | ARROW
+  | MATCH
+  | WITH
+  | CASE
   | ILLEGAL
   | EOF
 
@@ -34,7 +39,8 @@ let string_of_token = function
   | INT i -> "INT " ^ string_of_int i
   | VAR s -> "VAR " ^ s
   | BOOL b -> "BOOL " ^ string_of_bool b
-  | DECLARATION -> "DECLARATION"
+  | LET -> "LET"
+  | FUNCTION -> "FUNCTION"
   | ASSIGNMENT -> "ASSIGNMENT"
   | PLUS -> "PLUS"
   | MINUS -> "MINUS"
@@ -59,6 +65,10 @@ let string_of_token = function
   | LPAREN -> "LPAREN"
   | RPAREN -> "RPAREN"
   | SEMICOLON -> "SEMICOLON"
+  | ARROW -> "ARROW"
+  | MATCH -> "MATCH"
+  | WITH -> "WITH"
+  | CASE -> "CASE"
   | ILLEGAL -> "ILLEGAL"
   | EOF -> "EOF"
 ;;

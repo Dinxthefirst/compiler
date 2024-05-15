@@ -8,20 +8,24 @@ let print_failure msg tokens =
 let rec parse_expr tokens =
   match tokens with
   | IF :: tokens ->
-    let cond, tokens = parse_expr tokens in
-    (match tokens with
-     | THEN :: tokens ->
-       let then_expr, tokens = parse_expr tokens in
-       (match tokens with
-        | ELSE :: tokens ->
-          let else_expr, tokens = parse_expr tokens in
-          If (cond, then_expr, else_expr), tokens
-        | _ -> print_failure "Expected 'else'" tokens)
-     | _ -> print_failure "Expected 'then'" tokens)
+    let expr, tokens = parse_if tokens in
+    expr, tokens
   | LBRACE :: tokens ->
     let stmts, tokens = parse_block tokens in
     Block stmts, tokens
   | _ -> parse_low_precedence tokens
+
+and parse_if tokens =
+  let cond, tokens = parse_expr tokens in
+  match tokens with
+  | THEN :: tokens ->
+    let then_expr, tokens = parse_expr tokens in
+    (match tokens with
+     | ELSE :: tokens ->
+       let else_expr, tokens = parse_expr tokens in
+       If (cond, then_expr, else_expr), tokens
+     | _ -> print_failure "Expected 'else'" tokens)
+  | _ -> print_failure "Expected 'then'" tokens
 
 and parse_low_precedence tokens =
   let rec parse tokens left =
@@ -146,9 +150,12 @@ and parse_atom tokens =
     (match tokens with
      | RPAREN :: tokens -> expr, tokens
      | _ -> print_failure "Expected ')'" tokens)
-  | DECLARATION :: VAR v :: ASSIGNMENT :: tokens ->
+  | LET :: VAR v :: ASSIGNMENT :: tokens ->
     let expr, tokens = parse_expr tokens in
-    Decl (v, expr), tokens
+    ValDecl (v, expr), tokens
+  | FUNCTION :: VAR v :: LPAREN :: VAR arg :: RPAREN :: ASSIGNMENT :: tokens ->
+    let expr, tokens = parse_expr tokens in
+    FunDecl (v, arg, expr), tokens
   | token -> print_failure "Unexpected token: " token
 
 and parse_statements tokens =
@@ -156,8 +163,11 @@ and parse_statements tokens =
   (* Printf.printf "\nParsing statement:\n%s\n" (string_of_ast expr); *)
   match tokens with
   | SEMICOLON :: tokens ->
-    let expr', tokens = parse_statements tokens in
-    Seq (expr, expr'), tokens
+    (match expr with
+     | ValDecl _ | FunDecl _ ->
+       let expr', tokens = parse_statements tokens in
+       Seq (expr, expr'), tokens
+     | _ -> print_failure "Expected declaration" tokens)
   | _ -> expr, tokens
 
 and parse_block tokens =

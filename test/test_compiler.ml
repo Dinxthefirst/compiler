@@ -72,28 +72,28 @@ let test_negation_with_parentheses () =
 ;;
 
 let test_semicolon () =
-  let code = "1; 2" in
+  let code = "let x = 2; x" in
   let result = compile_and_evaluate code in
   let expected = "2" in
   check string "correct result" result expected
 ;;
 
 let test_multiple_semicolons () =
-  let code = "1; 2; 3" in
+  let code = "let x = 2; let y = 1; x + y" in
   let result = compile_and_evaluate code in
   let expected = "3" in
   check string "correct result" result expected
 ;;
 
 let test_declaration () =
-  let code = "val x = 2; x" in
+  let code = "let x = 2; x" in
   let result = compile_and_evaluate code in
   let expected = "2" in
   check string "correct result" result expected
 ;;
 
 let test_multiple_declarations () =
-  let code = "val x = 2; val y = 3; x + y" in
+  let code = "let x = 2; let y = 3; x + y" in
   let result = compile_and_evaluate code in
   let expected = "5" in
   check string "correct result" result expected
@@ -108,7 +108,7 @@ let test_block () =
 
 let test_big_block () =
   let code =
-    "{ val x = -1; val y = 1; val z = { val a = 45; val b = 24; a + b }; x + y \
+    "{ let x = -1; let y = 1; let z = { let a = 45; let b = 24; a + b }; x + y \
      + z }"
   in
   let result = compile_and_evaluate code in
@@ -209,7 +209,7 @@ let test_big_not () =
 
 let test_big_if_else () =
   let code =
-    "if { val x = 1; x == 1 } then { if 2 <= 2 then 69 else 2 } else 3"
+    "if { let x = 1; x == 1 } then { if 2 <= 2 then 69 else 2 } else 3"
   in
   let result = compile_and_evaluate code in
   let expected = "69" in
@@ -219,17 +219,17 @@ let test_big_if_else () =
 let test_bigger_expression () =
   let code =
     "{ \n\
-    \  val x = {\n\
-    \    val a = 100 * 1;\n\
-    \    val b = 1;\n\
+    \  let x = {\n\
+    \    let a = 100 * 1;\n\
+    \    let b = 1;\n\
     \    if false then b else {\n\
     \      a + b\n\
     \    }\n\
     \  };\n\
-    \  val y = -(!(0));\n\
-    \  val z = (1 < 2) + 1;\n\
-    \  val w = (true + true) * (true + true);\n\
-    \  val v = (10 % 3 - true) * false;\n\
+    \  let y = -(!(0));\n\
+    \  let z = (1 < 2) + 1;\n\
+    \  let w = (true + true) * (true + true);\n\
+    \  let v = (10 % 3 - true) * false;\n\
     \  x + y + z + w + v \n\
     \ }"
     (* x = 101
