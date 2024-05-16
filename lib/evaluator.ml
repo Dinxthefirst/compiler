@@ -2,9 +2,12 @@ open Ast
 module VarEnv = Map.Make (String)
 module FunEnv = Map.Make (String)
 
+type closure = string list * expr * var_env
+and var_env = int VarEnv.t
+
 type env =
-  { var_env : int VarEnv.t
-  ; fun_env : (string * expr * env ref) FunEnv.t ref
+  { var_env : var_env
+  ; fun_env : closure FunEnv.t
   }
 
 let rec evaluate_expr env = function
@@ -41,10 +44,9 @@ let rec evaluate_expr env = function
   | ValDecl (x, e) ->
     let env', v = evaluate_expr env e in
     { env' with var_env = VarEnv.add x v env'.var_env }, v
-  | FunDecl (f, x, e) ->
-    let new_env = { var_env = env.var_env; fun_env = ref FunEnv.empty } in
-    env.fun_env := FunEnv.add f (x, e, ref new_env) !(env.fun_env);
-    env, 0
+  | FunDecl (f, xs, e) ->
+    let closure = xs, e, env.var_env in
+    { env with fun_env = FunEnv.add f closure env.fun_env }, 0
   | Seq (d, e) ->
     let env', _ = evaluate_expr env d in
     evaluate_expr env' e
@@ -59,16 +61,29 @@ let rec evaluate_expr env = function
     let _, v = evaluate_expr env e in
     let rec match_cases env = function
       | [] -> failwith "No matching case"
-      | (c, e) :: _ ->
+      | (c, e) :: cs ->
         let _, v' = evaluate_expr env c in
-        if v = v' then evaluate_expr env e else match_cases env cases
+        if v = v' then evaluate_expr env e else match_cases env cs
     in
     match_cases env cases
-  | Call (_, _) -> failwith "Function call not implemented"
+  | Call (f, args) ->
+    let closure = FunEnv.find f env.fun_env in
+    let xs, e, var_env = closure in
+    let rec bind_args env xs args =
+      match xs, args with
+      | [], [] -> env
+      | x :: xs, arg :: args ->
+        let _, v = evaluate_expr env arg in
+        let new_var_env = VarEnv.add x v env.var_env in
+        bind_args { env with var_env = new_var_env } xs args
+      | _ -> failwith "Invalid number of arguments"
+    in
+    let env' = bind_args { env with var_env } xs args in
+    evaluate_expr env' e
 ;;
 
 let evaluate expr =
-  let env : env = { var_env = VarEnv.empty; fun_env = ref FunEnv.empty } in
+  let env = { var_env = VarEnv.empty; fun_env = FunEnv.empty } in
   let _, value = evaluate_expr env expr in
   string_of_int value
 ;;

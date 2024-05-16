@@ -268,6 +268,55 @@ let test_function () =
   check string "correct result" result expected
 ;;
 
+let test_multiple_functions () =
+  let code = "fn f(x) = x + 1; fn g(x) = x + 2; f(1) + g(1)" in
+  let result = compile_and_evaluate code in
+  let expected = "5" in
+  check string "correct result" result expected
+;;
+
+let test_function_multiple_args () =
+  let code = "fn f(x, y) = x + y; f(1, 2)" in
+  let result = compile_and_evaluate code in
+  let expected = "3" in
+  check string "correct result" result expected
+;;
+
+let test_function_with_function_call () =
+  let code = "fn f(x) = x + 1; fn g(x) = f(x); g(1)" in
+  let result = compile_and_evaluate code in
+  let expected = "2" in
+  check string "correct result" result expected
+;;
+
+let test_function_block () =
+  let code = "fn f(x) = {x + 1}; f(1)" in
+  let result = compile_and_evaluate code in
+  let expected = "2" in
+  check string "correct result" result expected
+;;
+
+let test_function_within_function () =
+  let code = "fn f(x) = {fn g(y) = x + y; g(1)}; f(1)" in
+  let result = compile_and_evaluate code in
+  let expected = "2" in
+  check string "correct result" result expected
+;;
+
+let test_recursion () =
+  let code = "fn f(x) = if x == 0 then 0 else f(x - 1); f(10)" in
+  let result = compile_and_evaluate code in
+  let expected = "0" in
+  check string "correct result" result expected
+;;
+
+let test_function_currying () =
+  let code = "fn f(x) = fn g(y) = x + y; f(1)(2)" in
+  let result = compile_and_evaluate code in
+  let expected = "3" in
+  check string "correct result" result expected
+;;
+
 let suite =
   [ "addition", `Quick, test_addition
   ; "subtraction", `Quick, test_subtraction
@@ -303,6 +352,13 @@ let suite =
   ; "match", `Quick, test_match
   ; "big match", `Quick, test_big_match
   ; "function", `Quick, test_function
+  ; "multiple functions", `Quick, test_multiple_functions
+  ; "function multiple args", `Quick, test_function_multiple_args
+  ; "function with function call", `Quick, test_function_with_function_call
+  ; "function block", `Quick, test_function_block
+  ; "function within function", `Quick, test_function_within_function
+  ; "recursion", `Quick, test_recursion
+  ; "function currying", `Quick, test_function_currying
   ]
 ;;
 

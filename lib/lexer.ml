@@ -17,6 +17,7 @@ let rec lex_pos str pos =
      | '/' -> DIVIDE :: lex_pos str (pos + 1)
      | '%' -> MODULO :: lex_pos str (pos + 1)
      | '^' -> POWER :: lex_pos str (pos + 1)
+     | ',' -> COMMA :: lex_pos str (pos + 1)
      | '!' ->
        (match peek str (pos + 1) with
         | Some '=' -> NEQ :: lex_pos str (pos + 2)

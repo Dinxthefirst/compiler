@@ -12,6 +12,7 @@ type token =
   | MODULO
   | POWER
   | BANG
+  | COMMA
   | IF
   | THEN
   | ELSE
@@ -50,6 +51,7 @@ let string_of_token = function
   | MODULO -> "MODULO"
   | POWER -> "POWER"
   | BANG -> "BANG"
+  | COMMA -> "COMMA"
   | IF -> "IF"
   | THEN -> "THEN"
   | ELSE -> "ELSE"

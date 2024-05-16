@@ -7,9 +7,9 @@ type expr =
   | If of expr * expr * expr
   | Seq of expr * expr
   | ValDecl of string * expr
-  | FunDecl of string * string * expr
+  | FunDecl of string * string list * expr
   | Block of expr
-  | Call of string * expr
+  | Call of string * expr list
   | Match of expr * case list
 
 and binOp =
@@ -50,7 +50,7 @@ let rec string_of_ast = function
   | Seq (e1, e2) -> "Seq (" ^ string_of_ast e1 ^ ", " ^ string_of_ast e2 ^ ")"
   | ValDecl (s, e) -> "ValDecl (" ^ s ^ ", " ^ string_of_ast e ^ ")"
   | FunDecl (f, s, e) ->
-    "FunDecl (" ^ f ^ ", " ^ s ^ ", " ^ string_of_ast e ^ ")"
+    "FunDecl (" ^ f ^ ", " ^ String.concat ", " s ^ ", " ^ string_of_ast e ^ ")"
   | Block e -> "Block {" ^ string_of_ast e ^ "}"
   | If (e1, e2, e3) ->
     "If ("
@@ -60,7 +60,8 @@ let rec string_of_ast = function
     ^ ", "
     ^ string_of_ast e3
     ^ ")"
-  | Call (f, e) -> "FunCall (" ^ f ^ ", " ^ string_of_ast e ^ ")"
+  | Call (f, e) ->
+    "FunCall (" ^ f ^ ", " ^ String.concat ", " (List.map string_of_ast e) ^ ")"
   | Match (e, c) -> "Match (" ^ string_of_ast e ^ ", " ^ string_of_case c ^ ")"
 
 and string_of_binOp = function
@@ -107,7 +108,8 @@ let rec pretty_string_of_ast = function
   | UnOp (op, e) -> pretty_string_of_unOp op ^ pretty_string_of_ast e
   | Seq (d, e) -> pretty_string_of_ast d ^ ";\n" ^ pretty_string_of_ast e
   | ValDecl (s, e) -> "let " ^ s ^ " = " ^ pretty_string_of_ast e
-  | FunDecl (f, s, e) -> "fn " ^ f ^ " " ^ s ^ " = " ^ pretty_string_of_ast e
+  | FunDecl (f, s, e) ->
+    "fn " ^ f ^ "(" ^ String.concat ", " s ^ ") = " ^ pretty_string_of_ast e
   | Block e -> "{\n" ^ pretty_string_of_ast e ^ "\n}"
   | If (e1, e2, e3) ->
     "if "
@@ -116,7 +118,8 @@ let rec pretty_string_of_ast = function
     ^ pretty_string_of_ast e2
     ^ "\nelse\n"
     ^ pretty_string_of_ast e3
-  | Call (f, e) -> f ^ "(" ^ pretty_string_of_ast e ^ ")"
+  | Call (f, e) ->
+    f ^ "(" ^ String.concat ", " (List.map pretty_string_of_ast e) ^ ")"
   | Match (e, c) ->
     "match " ^ pretty_string_of_ast e ^ " with " ^ pretty_string_of_case c
 

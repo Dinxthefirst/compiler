@@ -138,7 +138,12 @@ and parse_atom tokens =
   match tokens with
   | INT i :: tokens -> Int i, tokens
   | BOOL b :: tokens -> Bool b, tokens
-  | VAR v :: tokens -> Var v, tokens
+  | VAR v :: tokens ->
+    (match tokens with
+     | LPAREN :: tokens ->
+       let args, tokens = parse_args tokens in
+       Call (v, args), tokens
+     | _ -> Var v, tokens)
   | MINUS :: tokens ->
     let right, tokens = parse_atom tokens in
     UnOp (Neg, right), tokens
@@ -153,17 +158,43 @@ and parse_atom tokens =
   | LET :: VAR v :: ASSIGNMENT :: tokens ->
     let expr, tokens = parse_expr tokens in
     ValDecl (v, expr), tokens
-  | FUNCTION :: VAR v :: LPAREN :: VAR arg :: RPAREN :: ASSIGNMENT :: tokens ->
-    let expr, tokens = parse_expr tokens in
-    FunDecl (v, arg, expr), tokens
+  | FUNCTION :: tokens -> parse_fun_decl tokens
   | MATCH :: tokens ->
     let expr, tokens = parse_expr tokens in
     (match tokens with
      | WITH :: tokens ->
+       Printf.printf "\nParsing match:\n%s\n" (string_of_tokens tokens);
        let cases, tokens = parse_cases tokens in
+       Printf.printf
+         "\nParsed cases:\n%s\n"
+         (string_of_ast (Match (expr, cases)));
        Match (expr, cases), tokens
      | _ -> print_failure "Expected 'with'" tokens)
   | token -> print_failure "Unexpected token: " token
+
+and parse_fun_decl tokens =
+  match tokens with
+  | VAR f :: LPAREN :: tokens ->
+    let params, tokens = parse_params tokens in
+    (match tokens with
+     | ASSIGNMENT :: tokens ->
+       let body, tokens = parse_expr tokens in
+       FunDecl (f, params, body), tokens
+     | _ -> print_failure "Expected '=' after function declaration" tokens)
+  | _ -> print_failure "Expected function name" tokens
+
+and parse_params tokens =
+  let rec parse tokens params =
+    match tokens with
+    | RPAREN :: tokens -> List.rev params, tokens
+    | VAR v :: tokens ->
+      (match tokens with
+       | COMMA :: tokens -> parse tokens (v :: params)
+       | RPAREN :: tokens -> List.rev (v :: params), tokens
+       | _ -> print_failure "Expected ',' or ')'" tokens)
+    | _ -> print_failure "Expected variable" tokens
+  in
+  parse tokens []
 
 and parse_cases tokens =
   Printf.printf "\nParsing cases:\n%s\n" (string_of_tokens tokens);
@@ -181,6 +212,19 @@ and parse_cases tokens =
   in
   let cases, tokens = parse tokens [] in
   cases, tokens
+
+and parse_args tokens =
+  let rec parse tokens args =
+    match tokens with
+    | RPAREN :: tokens -> args, tokens
+    | _ ->
+      let arg, tokens = parse_expr tokens in
+      (match tokens with
+       | COMMA :: tokens -> parse tokens (arg :: args)
+       | RPAREN :: tokens -> List.rev (arg :: args), tokens
+       | _ -> print_failure "Expected ',' or ')'" tokens)
+  in
+  parse tokens []
 
 and parse_statements tokens =
   let expr, tokens = parse_expr tokens in
