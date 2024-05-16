@@ -65,6 +65,7 @@ let rec lex_pos str pos =
          | "match" -> MATCH
          | "with" -> WITH
          | "case" -> CASE
+         | "end" -> END
          | _ -> VAR var
        in
        token :: lex_pos str end_pos
@@ -97,4 +98,7 @@ and is_alphanumeric c = is_alpha c || is_digit c || c = '_'
 and is_alpha c = (c >= 'a' && c <= 'z') || (c >= 'A' && c <= 'Z')
 and is_digit c = c >= '0' && c <= '9'
 
-let lex str = lex_pos str 0
+let lex str =
+  Printf.printf "Lexing: %s\n" str;
+  lex_pos str 0
+;;

@@ -56,13 +56,14 @@ let rec evaluate_expr env = function
      | 0 -> evaluate_expr env' e2
      | _ -> failwith "Invalid condition")
   | Match (e, cases) ->
-    let env', v = evaluate_expr env e in
+    let _, v = evaluate_expr env e in
     let rec match_cases env = function
       | [] -> failwith "No matching case"
-      | (p, e) :: _ when p = v -> evaluate_expr env e
-      | _ :: cases -> match_cases env cases
+      | (c, e) :: _ ->
+        let _, v' = evaluate_expr env c in
+        if v = v' then evaluate_expr env e else match_cases env cases
     in
-    match_cases env' cases
+    match_cases env cases
   | Call (_, _) -> failwith "Function call not implemented"
 ;;
 

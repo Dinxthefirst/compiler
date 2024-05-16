@@ -2,7 +2,7 @@ open Tokens
 open Ast
 
 let print_failure msg tokens =
-  failwith (Printf.sprintf "%s\n%s" msg (string_of_tokens tokens))
+  failwith (Printf.sprintf "%s\n %s" msg (string_of_tokens tokens))
 ;;
 
 let rec parse_expr tokens =
@@ -156,11 +156,35 @@ and parse_atom tokens =
   | FUNCTION :: VAR v :: LPAREN :: VAR arg :: RPAREN :: ASSIGNMENT :: tokens ->
     let expr, tokens = parse_expr tokens in
     FunDecl (v, arg, expr), tokens
+  | MATCH :: tokens ->
+    let expr, tokens = parse_expr tokens in
+    (match tokens with
+     | WITH :: tokens ->
+       let cases, tokens = parse_cases tokens in
+       Match (expr, cases), tokens
+     | _ -> print_failure "Expected 'with'" tokens)
   | token -> print_failure "Unexpected token: " token
+
+and parse_cases tokens =
+  Printf.printf "\nParsing cases:\n%s\n" (string_of_tokens tokens);
+  let rec parse tokens cases =
+    match tokens with
+    | CASE :: tokens ->
+      let expr, remaining_tokens = parse_expr tokens in
+      (match remaining_tokens with
+       | ARROW :: remaining_tokens ->
+         let expr', remaining_tokens' = parse_statements remaining_tokens in
+         parse remaining_tokens' ((expr, expr') :: cases)
+       | _ -> print_failure "Expected '=>'" tokens)
+    | END :: tokens -> cases, tokens
+    | _ -> print_failure "Expected 'end'" tokens
+  in
+  let cases, tokens = parse tokens [] in
+  cases, tokens
 
 and parse_statements tokens =
   let expr, tokens = parse_expr tokens in
-  (* Printf.printf "\nParsing statement:\n%s\n" (string_of_ast expr); *)
+  Printf.printf "\nParsing statement:\n%s\n" (string_of_ast expr);
   match tokens with
   | SEMICOLON :: tokens ->
     (match expr with
@@ -172,14 +196,14 @@ and parse_statements tokens =
 
 and parse_block tokens =
   let stmts, tokens = parse_statements tokens in
-  (* Printf.printf "\nParsing block:\n%s\n" (string_of_ast stmts); *)
+  Printf.printf "\nParsing block:\n%s\n" (string_of_ast stmts);
   match tokens with
   | RBRACE :: tokens -> stmts, tokens
   | _ -> print_failure "Expected '}'" tokens
 ;;
 
 let parse tokens =
-  (* Printf.printf "Parsing:\n%s\n" (string_of_tokens tokens); *)
+  Printf.printf "Parsing:\n%s\n" (string_of_tokens tokens);
   let ast, tokens = parse_statements tokens in
   match tokens with
   | EOF :: [] -> ast

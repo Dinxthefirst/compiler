@@ -244,6 +244,30 @@ let test_bigger_expression () =
   check string "correct result" result expected
 ;;
 
+let test_match () =
+  let code = "match 1 with case 1 => 1 end" in
+  let result = compile_and_evaluate code in
+  let expected = "1" in
+  check string "correct result" result expected
+;;
+
+let test_big_match () =
+  let code =
+    "match 3 with case 1 => 1 case 2 => 2 case 3 => 3 case 4 => 4 case 5 => 5 \
+     end"
+  in
+  let result = compile_and_evaluate code in
+  let expected = "3" in
+  check string "correct result" result expected
+;;
+
+let test_function () =
+  let code = "fn f(x) = x + 1; f(1)" in
+  let result = compile_and_evaluate code in
+  let expected = "2" in
+  check string "correct result" result expected
+;;
+
 let suite =
   [ "addition", `Quick, test_addition
   ; "subtraction", `Quick, test_subtraction
@@ -276,6 +300,9 @@ let suite =
   ; "big not", `Quick, test_big_not
   ; "big if else", `Quick, test_big_if_else
   ; "bigger expression", `Quick, test_bigger_expression
+  ; "match", `Quick, test_match
+  ; "big match", `Quick, test_big_match
+  ; "function", `Quick, test_function
   ]
 ;;
 

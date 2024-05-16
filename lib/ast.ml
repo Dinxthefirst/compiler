@@ -32,7 +32,7 @@ and unOp =
   | Neg
   | Not
 
-and case = int * expr
+and case = expr * expr
 
 let rec string_of_ast = function
   | Int i -> "Int (" ^ string_of_int i ^ ")"
@@ -87,7 +87,7 @@ and string_of_case = function
   | cs ->
     List.fold_left
       (fun acc (c, e) ->
-        acc ^ "(" ^ string_of_int c ^ ", " ^ string_of_ast e ^ ")")
+        acc ^ "Case (" ^ string_of_ast c ^ ", " ^ string_of_ast e ^ ")")
       ""
       cs
 ;;
@@ -144,7 +144,11 @@ and pretty_string_of_case = function
   | cs ->
     List.fold_left
       (fun acc (c, e) ->
-        acc ^ "case " ^ string_of_int c ^ " => " ^ pretty_string_of_ast e ^ "\n")
+        acc
+        ^ "\ncase "
+        ^ pretty_string_of_ast c
+        ^ " => "
+        ^ pretty_string_of_ast e)
       ""
       cs
 ;;

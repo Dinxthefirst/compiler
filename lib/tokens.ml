@@ -31,6 +31,7 @@ type token =
   | ARROW
   | MATCH
   | WITH
+  | END
   | CASE
   | ILLEGAL
   | EOF
@@ -69,6 +70,7 @@ let string_of_token = function
   | MATCH -> "MATCH"
   | WITH -> "WITH"
   | CASE -> "CASE"
+  | END -> "END"
   | ILLEGAL -> "ILLEGAL"
   | EOF -> "EOF"
 ;;
